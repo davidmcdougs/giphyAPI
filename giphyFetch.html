@@ -1,40 +1,74 @@
 <doctype! html>
 <html>
 <head>
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="swagger.css">
 </head>
 <body>
-	<img src="https://gph.is/2r7fJlv">
-	<div class = 'container'>
-		content
-		
-	</div>
-<script>
-var search = 'default'
-var yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=R&lang=en'
+  <div class="container">
+    <h1>GetGIF!</h1>
 
+    <form id="gif-search-form">
+      <label for="movie-input">Search for a GIF!</label>
+      <input type="text" id="gif-input"><br>
+
+      <!-- This button will trigger our AJAX call -->
+      <input id="find-gif" type="submit" value="gif Search">
+    </form>
+    <div class='gif-land'>
+    </div>
+		
+<script>
+var search = 'fly'
+var yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=pg13&lang=en'
+$('#find-gif').on('click', function(event){
+	event.preventDefault();
+	makeCollage();
+})
+$(document).on('click','.results', function(){
+	var mano = $(this).attr('alt');
+	console.log(mano);
+	$(this).attr('src',mano);
+
+})
+
+var ratings = []
+var supplant = []
+function makeCollage(){
+	$('.gif-land').empty();
+	search = $('#gif-input').val();
+	yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=R&lang=en';
     $.ajax({
       url: yourl,
       method: "GET"
     }).done(function(response) {
     	console.log(response);
     	for (i=0; i<response.data.length; i++){
-			console.log(response.data[i].url);
-			console.log(i);
-			$('<img/>', {
-    id: i,
-    src: response.data[i].url,
-}).appendTo('.container');
+    		ratings[i] = response.data[i].rating;
+    		supplant[i] = response.data[i].images.fixed_width.url;
+    		console.log(ratings[i])
+				$('<div>',{
+					id: 'placeholder'+i,
+					class: 'placeholder',
+				}).appendTo('.gif-land'); 		
+				$('<img/>', {			
+		    		id: 'img'+i,
+		    		class: 'results',
+		    		src: response.data[i].images.original_still.url,
+		    		alt: supplant[i],
+				}).appendTo('#placeholder'+i);
+
+				$('<p/>', {
+				id: 'rating'+i			
+				}).prependTo('#placeholder'+i);
+			$('#rating'+i).text(ratings[i])	
     	}
     });
+}
 
 
 
-    function makeCollage(){
-    	for (i=0; i<response.data.length; i++){
-			console.log();
-    	}
-    }
+
 </script>
 </body>

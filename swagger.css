@@ -2,3 +2,19 @@
 	width:100%;
 	height:100%;
 }
+.results{
+	margin:5px;
+	max-width:200px;
+	max-height:200px;
+}
+.placeholder{
+	display:inline;
+	float:left;
+	clear:both;
+}
+.pokeball{
+	float:left;
+}
+#fly{
+	width:200px;
+}
