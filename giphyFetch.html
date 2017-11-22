@@ -1,0 +1,40 @@
+<doctype! html>
+<html>
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="swagger.css">
+</head>
+<body>
+	<img src="https://gph.is/2r7fJlv">
+	<div class = 'container'>
+		content
+		
+	</div>
+<script>
+var search = 'default'
+var yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=R&lang=en'
+
+    $.ajax({
+      url: yourl,
+      method: "GET"
+    }).done(function(response) {
+    	console.log(response);
+    	for (i=0; i<response.data.length; i++){
+			console.log(response.data[i].url);
+			console.log(i);
+			$('<img/>', {
+    id: i,
+    src: response.data[i].url,
+}).appendTo('.container');
+    	}
+    });
+
+
+
+    function makeCollage(){
+    	for (i=0; i<response.data.length; i++){
+			console.log();
+    	}
+    }
+</script>
+</body>
