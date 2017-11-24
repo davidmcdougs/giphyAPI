@@ -7,64 +7,166 @@
 </head>
 <body>
   <div class="container">
-    <h1>GetGIF!</h1>
+    <h1>GetGIF!
+    	<div class='holder'>
+	    	<button id='safety' class='btn-success param'>safe for work</button>
+	    	<button id='not-safe' class='btn-success param'>not safe for work</button>
+	    	<button id='limit10' class='btn-success param'>10 results </button>
+	    	<button id='limit20' class ='btn-success param'>20 results </button>
+	    	<button id='previous-page' class='btn-success param'>previous page</button>
+	    	<button id='next-page' class='btn-success param'>next page </button>
+	    </div>
+    </h1>
+    <div class='buttonTown'>
+    </div>
 
     <form id="gif-search-form">
-      <label for="movie-input">Search for a GIF!</label>
+      <label for="movie-input">Type your keyword here!</label>
       <input type="text" id="gif-input"><br>
 
       <!-- This button will trigger our AJAX call -->
-      <input id="find-gif" type="submit" value="gif Search">
+      <input id="find-gif" type="submit" value="make index">
     </form>
     <div class='gif-land'>
+    	<div class='row'>
+    		<div class='col-lg-6 col-md-6 col-sm-6 black' id='gif-land1'>
+ 
+    		</div>
+    		<div class='col-lg-6 col-md-6 col-sm-6 black' id='gif-land2'>
+
+    		</div>	
+    	</div>	
     </div>
 		
 <script>
-var search = 'fly'
-var yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=pg13&lang=en'
-$('#find-gif').on('click', function(event){
-	event.preventDefault();
+$('#safety').on('click', function(){
+	rating = 'pg';
 	makeCollage();
 })
-$(document).on('click','.results', function(){
-	var mano = $(this).attr('alt');
-	console.log(mano);
-	$(this).attr('src',mano);
-
+$('#not-safe').on('click', function(){
+	rating = 'r';
+	makeCollage();
 })
+$('#limit10').on('click', function(){
+	limit = '10';
+	makeCollage();
+})
+$('#limit20').on('click', function(){
+	limit = '20';
+	makeCollage();
+})
+$('#previous-page').on('click', function(){
+	page= parseInt(page)-parseInt(limit);
+	makeCollage();
+})
+$('#next-page').on('click', function(){
+	page=parseInt(page)+parseInt(limit);
+	makeCollage();
+})	
+$(document).on('click', '.searchers', function(event){
+	event.preventDefault();
+	search = $(this).attr('value');
+	page =0;
+	makeCollage();
+})
+$('#find-gif').on('click', function(event){
+	event.preventDefault();
+if ($('#gif-input').val() == "") {
 
-var ratings = []
-var supplant = []
+}
+else {
+	setButton();
+	buildButton();
+
+	$('#gif-input').val("")
+
+}
+})
+//aternates photos between still and animated on click
+$(document).on('click','.results', function(){
+	var numberFilter= $(this).attr('id').replace(/[^0-9]/g, '');
+	if (active == 1){
+	var flipper = original[numberFilter]
+	$(this).attr('src', flipper);
+	active = 0;
+	}
+	else {
+	var mano = supplant[numberFilter];
+	$(this).attr('src',mano);
+	active = 1;
+}
+})
+var ticket=0;
+var active =0;
+var ratings = [];
+var supplant = [];
+var original = [];
+var buttons = [];
+var search = 'fly';
+var yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=pg&lang=en';
+var rating = 'pg';
+var limit = '15';
+var page = 0;
+//fetches gifs by using variable search as user imput. places still and animated photos along with ratings which correspond to the generated images ID. Generates a holding div, the rating, and the image and pushes them to the dom.
+function setButton(){
+buttons[ticket] = $('#gif-input').val();
+ticket ++;
+
+}
+function buildButton(){
+	$('.buttonTown').empty()
+	for(i=0; i<buttons.length; i++){
+	$('<button/>',{
+	id: 'button'+i,
+	class: 'searchers',
+	value: buttons[i],
+	}).text(buttons[i]).appendTo('.buttonTown')
+}
+}
 function makeCollage(){
-	$('.gif-land').empty();
-	search = $('#gif-input').val();
-	yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit=10&offset=0&rating=R&lang=en';
+	$('#gif-land1').empty();
+	$('#gif-land2').empty();
+	yourl = 'https://api.giphy.com/v1/gifs/search?api_key=QeajTkO3kra8SwpzY55sT2jVyo5VQpca&q='+search+'&limit='+limit+'&offset='+page+'&rating='+rating+'&lang=en';
     $.ajax({
       url: yourl,
       method: "GET"
     }).done(function(response) {
     	console.log(response);
+    if (response.data.length == 0){
+    	alert('no more gifs');
+    }
+    else {	
     	for (i=0; i<response.data.length; i++){
     		ratings[i] = response.data[i].rating;
     		supplant[i] = response.data[i].images.fixed_width.url;
-    		console.log(ratings[i])
+    		original[i] = response.data[i].images.fixed_width_still.url;	
+    		if (i<(limit/2)){
 				$('<div>',{
 					id: 'placeholder'+i,
-					class: 'placeholder',
-				}).appendTo('.gif-land'); 		
+					class: 'placeholder',	
+				}).appendTo('#gif-land1');
+				}
+			else {
+				$('<div>',{
+					id: 'placeholder'+i,
+					class: 'placeholder',	
+				}).appendTo('#gif-land2');
+			}	 		
 				$('<img/>', {			
 		    		id: 'img'+i,
 		    		class: 'results',
 		    		src: response.data[i].images.original_still.url,
-		    		alt: supplant[i],
 				}).appendTo('#placeholder'+i);
 
 				$('<p/>', {
-				id: 'rating'+i			
+				id: 'rating'+i,
+				class: 'rater',			
 				}).prependTo('#placeholder'+i);
 			$('#rating'+i).text(ratings[i])	
     	}
+    }
     });
+
 }
 
 
